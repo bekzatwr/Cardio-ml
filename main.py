@@ -602,17 +602,12 @@ footer{
     <div class="risk-grid">
       <div class="risk-band a">
         <div class="risk-color"></div>
-        <div class="risk-name">Норма (A)</div>
-        <div class="risk-desc">Қауіп факторлары бар, бірақ жүрек зақымы жоқ. Жылдық бақылау.</div>
-      </div>
-      <div class="risk-band b">
-        <div class="risk-color"></div>
-        <div class="risk-name">Стадия B</div>
-        <div class="risk-desc">Жүрек зақымы бар, симптом жоқ. 6 айда бір бақылау.</div>
+        <div class="risk-name">норма</div>
+        <div class="risk-desc">Симптом жоқ немесе жүрек зақымы бар (симптомсыз). Жылдық бақылау.</div>
       </div>
       <div class="risk-band c">
         <div class="risk-color"></div>
-        <div class="risk-name">Риск C</div>
+        <div class="risk-name">C</div>
         <div class="risk-desc">Жүрек зақымы + ХСН симптомдары. 3 айда бір бақылау.</div>
       </div>
       <div class="risk-band cd">
@@ -622,7 +617,7 @@ footer{
       </div>
       <div class="risk-band d">
         <div class="risk-color"></div>
-        <div class="risk-name">Стадия D</div>
+        <div class="risk-name">D</div>
         <div class="risk-desc">Рефрактерлі ХСН. Жедел госпитализация немесе паллиативтік көмек.</div>
       </div>
     </div>
@@ -647,7 +642,7 @@ footer{
       <div class="term-line"><span class="t-prompt"> </span><span class="t-dim">  -d '{"ef": 38.0, "nt_probnp": 1200.0, "six_min_walk": 280.0,</span></div>
       <div class="term-line"><span class="t-prompt"> </span><span class="t-dim">       "has_prior_mi": true, "symptom_class": 3}'</span></div>
       <div class="term-line"><span class="t-prompt"> </span><span class="t-dim">  </span></div>
-      <div class="term-line"><span class="t-prompt">→</span><span class="t-yellow">  "risk_group": "Риск C",</span></div>
+      <div class="term-line"><span class="t-prompt">→</span><span class="t-yellow">  "risk_group": "C",</span></div>
       <div class="term-line"><span class="t-prompt"> </span><span class="t-yellow">  "risk_score": 0.48,</span></div>
       <div class="term-line"><span class="t-prompt"> </span><span class="t-blue">  "confidence": "высокая",  "risk_color": "yellow"</span></div>
     </div>

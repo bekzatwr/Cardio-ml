@@ -163,7 +163,7 @@ class RiskResponse(CardioBaseModel):
 
     risk_group: str = Field(
         ...,
-        description="Норма (A) / Стадия B / Риск C / C→D / Стадия D",
+        description="ТЗ 5.2: норма / C / C→D / D",
         json_schema_extra={"example": "C→D"},
     )
     risk_score: float = Field(

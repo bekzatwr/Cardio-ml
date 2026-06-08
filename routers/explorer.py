@@ -701,7 +701,7 @@ async function runRequest() {
 }
 
 function colorMap(rg) {
-  const m = {'Норма (A)':'rg-green','Стадия B':'rg-blue','Риск C':'rg-yellow','C→D':'rg-orange','Стадия D':'rg-red'};
+  const m = {'норма':'rg-green','C':'rg-yellow','C→D':'rg-orange','D':'rg-red'};
   return m[rg] || 'rg-blue';
 }
 function scoreColor(score) {
@@ -776,8 +776,8 @@ ${renderJSON(data)}`;
     const dist = data.distribution || {};
     const total = data.total_patients || 1;
     const segs = [
-      ['Норма (A)','dist-a'], ['Стадия B','dist-b'],
-      ['Риск C','dist-c'], ['C→D','dist-cd'], ['Стадия D','dist-d']
+      ['норма','dist-a'],
+      ['C','dist-c'], ['C→D','dist-cd'], ['D','dist-d']
     ].map(([k,cls]) => {
       const cnt = dist[k]||0;
       const pct = cnt/total*100;

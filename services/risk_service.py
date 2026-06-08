@@ -286,26 +286,24 @@ def patient_from_dataset_row(row: dict, patient_id=None) -> PatientData:
 # КОНСТАНТАЛАР
 # ═════════════════════════════════════════════════════════════════
 
-STAGE_A  = "Норма (A)"
-STAGE_B  = "Стадия B"
-STAGE_C  = "Риск C"
+STAGE_A  = "норма"   # ТЗ 5.2: risk_group (норма/C/C-D/D)
+STAGE_B  = "норма"   # ТЗ-да B тобы жоқ — норма деп санайды
+STAGE_C  = "C"
 STAGE_CD = "C→D"
-STAGE_D  = "Стадия D"
+STAGE_D  = "D"
 
 RISK_COLOR_MAP = {
-    STAGE_A:  "green",
-    STAGE_B:  "blue",
-    STAGE_C:  "yellow",
-    STAGE_CD: "orange",
-    STAGE_D:  "red",
+    "норма": "green",
+    "C":     "yellow",
+    "C→D":  "orange",
+    "D":     "red",
 }
 
 RECOMMENDATION_MAP = {
-    STAGE_A:  "Жылдық жоспарлы бақылау. Қауіп факторларын бақылау.",
-    STAGE_B:  "6 айда бір бақылау. Терапияны түзету.",
-    STAGE_C:  "3 айда бір бақылау. Дәрілік терапияны оңтайландыру.",
-    STAGE_CD: "2 аптада бір бақылау. Госпитализацияны қарастыру.",
-    STAGE_D:  "Жедел госпитализация немесе паллиативтік көмек.",
+    "норма": "Жылдық жоспарлы бақылау. Қауіп факторларын бақылау.",
+    "C":    "3 айда бір бақылау. Дәрілік терапияны оңтайландыру.",
+    "C→D": "2 аптада бір бақылау. Госпитализацияны қарастыру.",
+    "D":   "Жедел госпитализация немесе паллиативтік көмек.",
 }
 
 BMI_UNDERWEIGHT = 18.5
@@ -741,11 +739,11 @@ def classify_risk(data: PatientData) -> RiskResponse:
     Пациент деректерінен риск тобын анықтайды.
 
     Балл 0.0–1.0:
-      <0.15  → Норма (A)  — green
-      <0.35  → Стадия B   — blue
-      <0.55  → Риск C     — yellow
-      <0.75  → C→D        — orange
-      ≥0.75  → Стадия D   — red
+      <0.15  → норма  — green  (ТЗ: норма)
+      <0.35  → норма  — green  (ТЗ: норма; бұрын "Стадия B" деп аталатын)
+      <0.55  → C      — yellow (ТЗ: C)
+      <0.75  → C→D    — orange (ТЗ: C→D)
+      ≥0.75  → D      — red    (ТЗ: D)
 
     Қолданылатын деректер:
       ФВ/ЛЖ + NT-proBNP + 6-мин тест + Биохимия + ЭКГ
@@ -777,7 +775,7 @@ def classify_risk(data: PatientData) -> RiskResponse:
     risk_color     = RISK_COLOR_MAP[risk_group]
     recommendation = RECOMMENDATION_MAP[risk_group]
 
-    if risk_group == STAGE_D:
+    if risk_group == STAGE_D:  # "D"
         warnings.append(
             "Стадия D: паллиативтік көмекті, механикалық қан айналым қолдауын "
             "немесе трансплантацияны қарастыру."
