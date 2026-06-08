@@ -1,0 +1,4 @@
+.venv/  
+__pycache__/  
+all_code.txt  
+.pytest_cache/ 
