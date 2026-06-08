@@ -58,20 +58,20 @@ class TestRiskStages:
 
     def test_normal_stage_a(self):
         result = classify_risk(patient_normal())
-        assert result.risk_group == "Норма (A)"
+        assert result.risk_group == "норма"
         assert result.risk_color == "green"
         assert result.risk_score < 0.15
 
     def test_stage_d_severe(self):
         result = classify_risk(patient_stage_d())
-        assert result.risk_group == "Стадия D"
+        assert result.risk_group == "D"
         assert result.risk_color == "red"
         assert result.risk_score >= 0.75
 
     def test_stage_b_structural_no_symptoms(self):
         patient = make_patient(ef=52.0, nt_probnp=200.0, six_min_walk=480.0, age=55)
         result = classify_risk(patient)
-        assert result.risk_group in ("Стадия B", "Норма (A)")
+        assert result.risk_group in ("норма", "C")
         assert result.risk_score < 0.55
 
     def test_risk_c_moderate(self):
@@ -79,7 +79,7 @@ class TestRiskStages:
         patient = make_patient(ef=38.0, nt_probnp=700.0, six_min_walk=280.0,
                                creatinine=155.0, age=66)
         result = classify_risk(patient)
-        assert result.risk_group in ("Риск C", "C→D")
+        assert result.risk_group in ("C", "C→D")
         assert 0.35 <= result.risk_score < 0.75
 
     def test_cd_transition(self):
@@ -87,7 +87,7 @@ class TestRiskStages:
                                creatinine=160.0, hemoglobin=98.0,
                                age=72, sex="M", symptom_class=3)
         result = classify_risk(patient)
-        assert result.risk_group in ("C→D", "Стадия D")
+        assert result.risk_group in ("C→D", "D")
         assert result.risk_score >= 0.50
 
     def test_score_capped_at_1(self):
