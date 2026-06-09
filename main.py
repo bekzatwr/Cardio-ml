@@ -20,7 +20,10 @@ for sub in ("", "services", "routers", "middleware"):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from routers import risk, alerts, summary, dynamics, import_data, training_data, explorer
+# imports жолына:
+from routers import risk, alerts, summary, dynamics, import_data, training_data, explorer, ml_validator
+
+
 
 _START_TIME = time.time()
 
@@ -60,6 +63,7 @@ app.include_router(dynamics.router,       prefix="/ml", tags=["Динамика"
 app.include_router(import_data.router,    prefix="/ml", tags=["Импорт данных"])
 app.include_router(training_data.router,  prefix="/ml", tags=["Training Data"])
 app.include_router(explorer.router,        tags=["Explorer"])
+app.include_router(ml_validator.router, prefix="/ml", tags=["ML Validator"])
 
 
 # ── Custom Swagger UI ────────────────────────────────────────────

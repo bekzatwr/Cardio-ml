@@ -514,3 +514,145 @@ class ImportResponse(CardioBaseModel):
     patients_critical: int           = Field(..., description="Пациентов с CRITICAL алертом")
     errors: List[str]                = Field(default_factory=list)
     results: List[ImportPatientResult] = Field(default_factory=list)
+
+# ═══════════════════════════════════════════════════════════════════
+# Осы блокты schemas.py файлының СОҢЫНА қос
+# ═══════════════════════════════════════════════════════════════════
+
+# =============================================================================
+#  ML VALIDATOR SCHEMAS
+# =============================================================================
+
+class FeatureImportanceItem(CardioBaseModel):
+    """Бір параметрдің маңыздылығы."""
+    feature: str   = Field(..., description="Параметр аты", json_schema_extra={"example": "nt_probnp"})
+    importance: float = Field(..., ge=0.0, le=1.0, description="Маңыздылық үлесі 0.0–1.0")
+    rank: int      = Field(..., description="Рейтинг (1 = ең маңызды)")
+
+
+class MissingValueStat(CardioBaseModel):
+    """Бір параметрдегі пропуск статистикасы."""
+    feature: str      = Field(...)
+    missing_count: int = Field(..., ge=0)
+    missing_pct: float = Field(..., ge=0.0, le=100.0)
+    is_critical: bool  = Field(..., description="True егер маңызды параметр болса (ef, nt_probnp, six_min_walk)")
+
+
+class DataQualityReport(CardioBaseModel):
+    """
+    ML Validator — толық деректер сапасы есебі.
+    GET /ml/validator/report эндпоинті осыны қайтарады.
+    """
+    # ── Жалпы ────────────────────────────────────────────────────
+    total_records: int = Field(
+        ...,
+        description="training_data-дағы барлық жазбалар саны",
+        json_schema_extra={"example": 47},
+    )
+    valid_records: int = Field(
+        ...,
+        description="ML оқытуға жарамды жазбалар (corrupted шығарылған)",
+        json_schema_extra={"example": 44},
+    )
+    corrupted_records: int = Field(
+        ...,
+        description="Барлық маңызды параметрлері жоқ (мусорные) жазбалар",
+        json_schema_extra={"example": 3},
+    )
+    corrupted_pct: float = Field(
+        ..., ge=0.0, le=100.0,
+        description="Мусорлық жазбалар үлесі, %",
+        json_schema_extra={"example": 6.4},
+    )
+
+    # ── Gold labels ───────────────────────────────────────────────
+    gold_label_count: int = Field(
+        ...,
+        description="Алмас дәрігерінің шешімдері (gold_label=true)",
+        json_schema_extra={"example": 23},
+    )
+    gold_label_pct: float = Field(
+        ..., ge=0.0, le=100.0,
+        description="Gold label үлесі, %",
+    )
+
+    # ── Класс үлестірімі ──────────────────────────────────────────
+    class_distribution: Dict[str, int] = Field(
+        ...,
+        description="Дәрігер шешімдері бойынша риск топтарының саны",
+        json_schema_extra={"example": {"норма": 8, "C": 26, "C→D": 10, "D": 3}},
+    )
+    class_balance_warning: Optional[str] = Field(
+        default=None,
+        description="Класс дисбалансы ескертуі (егер бір топ <5% болса)",
+        json_schema_extra={"example": "D тобы аз (3 жазба, 6.4%) — модель оқытуда SMOTE қажет"},
+    )
+
+    # ── Пропустар ─────────────────────────────────────────────────
+    missing_values: List[MissingValueStat] = Field(
+        default_factory=list,
+        description="Әр параметр бойынша пропуск статистикасы",
+    )
+    critical_missing_pct: float = Field(
+        ..., ge=0.0, le=100.0,
+        description="Маңызды параметрлердегі орташа пропуск %",
+        json_schema_extra={"example": 18.5},
+    )
+
+    # ── Feature Importance ────────────────────────────────────────
+    feature_importance: List[FeatureImportanceItem] = Field(
+        default_factory=list,
+        description="RandomForest бойынша параметр маңыздылығы (топ-N)",
+    )
+    model_trained: bool = Field(
+        ...,
+        description="True егер RandomForest оқытылса (≥10 жарамды жазба болса)",
+    )
+    model_accuracy: Optional[float] = Field(
+        default=None, ge=0.0, le=1.0,
+        description="RandomForest cross-val accuracy (болжамды мақсат емес — тек аналитика)",
+    )
+    model_warning: Optional[str] = Field(
+        default=None,
+        description="Модель ескертуі (аз деректер, дисбаланс т.б.)",
+    )
+
+    # ── v3.0 дайындығы ───────────────────────────────────────────
+    readiness_score: float = Field(
+        ..., ge=0.0, le=100.0,
+        description="v3.0 ML моделіне дайындық баллы 0–100",
+        json_schema_extra={"example": 34.5},
+    )
+    readiness_label: str = Field(
+        ...,
+        description="Дайындық деңгейі: недостаточно / базовый / хороший / отличный",
+        json_schema_extra={"example": "базовый"},
+    )
+    records_needed_for_v3: int = Field(
+        ...,
+        description="v3.0 үшін қанша жазба жетіспейді",
+        json_schema_extra={"example": 2953},
+    )
+    generated_at: str = Field(..., description="Есеп жасалған уақыт (ISO 8601)")
+
+
+class ValidatorRequest(CardioBaseModel):
+    """
+    POST /ml/validator/analyze эндпоинтіне сұраныс.
+    Spring Boot training_data кестесінен жазбаларды жіберіп,
+    FastAPI оларды талдайды.
+    """
+    records: List[Dict[str, Any]] = Field(
+        ...,
+        description=(
+            "training_data кестесіндегі жазбалар тізімі. "
+            "Әр жазба: {record_id, visit_id, patient_id, doctor_id, "
+            "input_features: {...}, doctor_decision: {...}, "
+            "label_type, created_at}"
+        ),
+    )
+    top_n_features: int = Field(
+        default=5,
+        ge=1, le=10,
+        description="Feature importance-та қанша параметр көрсету керек",
+    )

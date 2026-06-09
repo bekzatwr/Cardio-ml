@@ -360,5 +360,5 @@ def generate_summary(req: SummaryRequest) -> SummaryResponse:
         summary_text=summary_text,
         risk_group=risk_result.risk_group,
         alert_count=alert_count,
-        generated_at=datetime.utcnow().isoformat(),
+        generated_at=datetime.now(datetime.UTC).isoformat(),
     )

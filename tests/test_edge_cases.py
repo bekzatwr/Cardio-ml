@@ -27,8 +27,7 @@ FAIL = "❌ FAIL"
 
 results = []
 
-
-def test(name, fn):
+def run_edge_case(name, fn):
     try:
         fn()
         results.append(f"{PASS}  {name}")
@@ -216,23 +215,22 @@ def t_summary_with_history():
 
 # ── БАРЛЫҚ ТЕСТТЕР ───────────────────────────────────────────────
 
-test("Alert: бірінші визит history=[]",       t_alert_first_visit)
-test("Alert: history=None",                    t_alert_history_none)
-test("Alert: prev.creatinine=0",               t_alert_prev_creatinine_zero)
-test("Alert: prev.nt_probnp=None",             t_alert_prev_nt_none)
-test("Alert: барлық мәндер None",              t_alert_all_none_values)
-test("Alert: critical combo EF+Cr+Hb",         t_alert_critical_combo)
-test("NT Paradox: nt_probnp=None",             t_nt_paradox_none_values)
-test("NT Paradox: анықталды",                  t_nt_paradox_detected)
-test("Dynamics: 1 визит → ValueError",         t_dynamics_less_than_2)
-test("Dynamics: 2 визит жұмыс істейді",        t_dynamics_2_visits_ok)
-test("Dynamics: барлық мәндер None",           t_dynamics_all_none)
-test("Dynamics: visit_date жоқ → None",        t_dynamics_no_dates)
-test("Summary: бірінші визит history=[]",      t_summary_first_visit)
-test("Summary: visit_history=None",            t_summary_history_none)
-test("Summary: барлық мәндер None",            t_summary_all_none)
-test("Summary: тарихпен динамика",             t_summary_with_history)
-
+run_edge_case("Alert: бірінші визит history=[]", t_alert_first_visit)
+run_edge_case("Alert: history=None",                    t_alert_history_none)
+run_edge_case("Alert: prev.creatinine=0",               t_alert_prev_creatinine_zero)
+run_edge_case("Alert: prev.nt_probnp=None",             t_alert_prev_nt_none)
+run_edge_case("Alert: барлық мәндер None",              t_alert_all_none_values)
+run_edge_case("Alert: critical combo EF+Cr+Hb",         t_alert_critical_combo)
+run_edge_case("NT Paradox: nt_probnp=None",             t_nt_paradox_none_values)
+run_edge_case("NT Paradox: анықталды",                  t_nt_paradox_detected)
+run_edge_case("Dynamics: 1 визит → ValueError",         t_dynamics_less_than_2)
+run_edge_case("Dynamics: 2 визит жұмыс істейді",        t_dynamics_2_visits_ok)
+run_edge_case("Dynamics: барлық мәндер None",           t_dynamics_all_none)
+run_edge_case("Dynamics: visit_date жоқ → None",        t_dynamics_no_dates)
+run_edge_case("Summary: бірінші визит history=[]",      t_summary_first_visit)
+run_edge_case("Summary: visit_history=None",            t_summary_history_none)
+run_edge_case("Summary: барлық мәндер None",            t_summary_all_none)
+run_edge_case("Summary: тарихпен динамика",             t_summary_with_history)
 
 # ── НӘТИЖЕ ШЫҒАРУ ────────────────────────────────────────────────
 
