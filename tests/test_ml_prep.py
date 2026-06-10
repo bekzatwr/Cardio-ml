@@ -44,7 +44,7 @@ def make_record(
     """Идеальды толық жазба."""
     return {
         "record_id":     record_id,
-        "visit_id":      next((int(p) for p in record_id.split("_") if p.isdigit()), 1),
+        "visit_id":      1,
         "patient_id":    42,
         "doctor_id":     doctor_id,
         "label_type":    label_type,
@@ -566,5 +566,5 @@ class TestEdgeCases:
         t0     = time.time()
         result  = analyze_collected_data(records, top_n_features=5)
         elapsed = time.time() - t0
-        records = make_dataset(n_good=500, n_missing_ef=0, n_corrupted=0, n_empty=0)
+        assert result["total_records"] >= 500  # make_dataset default: +4 extra records
         assert elapsed < 30.0  # 30 секундтан асса — тым баяу
